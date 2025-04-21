@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>自訂呼吸循環計時器</title>
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    input {
+      width: 80px;
+      padding: 5px;
+      margin: 5px;
+      font-size: 1em;
+    }
+    label {
+      margin-right: 10px;
+    }
+    .stage-input {
+      margin-bottom: 10px;
+    }
+    #timer {
+      font-size: 3em;
+      margin: 30px 0 10px;
+    }
+    #current-stage {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>自訂呼吸循環計時器</h1>
+
+  <div id="setup">
+    <div class="stage-input">
+      <label>階段 1 標題：<input type="text" id="label0" value="吸氣"></label>
+      <label>秒數：<input type="number" id="duration0" value="8" min="1"></label>
+    </div>
+    <div class="stage-input">
+      <label>階段 2 標題：<input type="text" id="label1" value="屏息"></label>
+      <label>秒數：<input type="number" id="duration1" value="8" min="1"></label>
+    </div>
+    <div class="stage-input">
+      <label>階段 3 標題：<input type="text" id="label2" value="吐氣"></label>
+      <label>秒數：<input type="number" id="duration2" value="8" min="1"></label>
+    </div>
+    <div class="stage-input">
+      <label>階段 4 標題：<input type="text" id="label3" value="靜止"></label>
+      <label>秒數：<input type="number" id="duration3" value="4" min="1"></label>
+    </div>
+    <button onclick="startTimer()">開始計時</button>
+  </div>
+
+  <div id="countdown" style="display:none;">
+    <div id="current-stage">準備中...</div>
+    <div id="timer">00:00</div>
+  </div>
+
+  <script>
+    let stages = [];
+    let current = 0;
+    let timeLeft = 0;
+    let intervalId = null;
+
+    function updateDisplay() {
+      document.getElementById('current-stage').textContent = stages[current].label;
+      const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const secs = String(timeLeft % 60).padStart(2, '0');
+      document.getElementById('timer').textContent = `${mins}:${secs}`;
+    }
+
+    function nextStage() {
+      current = (current + 1) % stages.length;
+      timeLeft = stages[current].duration;
+    }
+
+    function tick() {
+      if (timeLeft < 0) {
+        nextStage();
+      }
+      updateDisplay();
+      timeLeft--;
+    }
+
+    function startTimer() {
+      stages = [];
+      for (let i = 0; i < 4; i++) {
+        const label = document.getElementById(`label${i}`).value || `階段${i+1}`;
+        const duration = parseInt(document.getElementById(`duration${i}`).value);
+        if (isNaN(duration) || duration < 1) {
+          alert(`請輸入有效的第 ${i+1} 階段秒數`);
+          return;
+        }
+        stages.push({ label, duration });
+      }
+
+      document.getElementById('setup').style.display = 'none';
+      document.getElementById('countdown').style.display = 'block';
+
+      current = 0;
+      timeLeft = stages[current].duration;
+      updateDisplay();
+
+      intervalId = setInterval(tick, 1000);
+    }
+  </script>
+</body>
+</html>
