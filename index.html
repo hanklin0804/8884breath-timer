@@ -10,6 +10,7 @@
       font-family: sans-serif;
       text-align: center;
       padding: 20px;
+      font-size: 2em;
     }
     input {
       width: 80px;
@@ -24,7 +25,7 @@
       margin-bottom: 10px;
     }
     #timer {
-      font-size: 3em;
+      font-size: 6em;
       margin: 30px 0 10px;
     }
     #current-stage {
@@ -40,7 +41,7 @@
   </style>
 </head>
 <body>
-  <h1>自訂呼吸循環計時器</h1>
+  
 
   <div id="setup">
     <div class="stage-input">
@@ -48,15 +49,15 @@
       <label>秒數：<input type="number" id="duration0" value="8" min="1"></label>
     </div>
     <div class="stage-input">
-      <label>階段 2 標題：<input type="text" id="label1" value="屏息"></label>
+      <label>階段 2 標題：<input type="text" id="label1" value="憋氣"></label>
       <label>秒數：<input type="number" id="duration1" value="8" min="1"></label>
     </div>
     <div class="stage-input">
-      <label>階段 3 標題：<input type="text" id="label2" value="吐氣"></label>
+      <label>階段 3 標題：<input type="text" id="label2" value="呼氣"></label>
       <label>秒數：<input type="number" id="duration2" value="8" min="1"></label>
     </div>
     <div class="stage-input">
-      <label>階段 4 標題：<input type="text" id="label3" value="靜止"></label>
+      <label>階段 4 標題：<input type="text" id="label3" value="憋氣"></label>
       <label>秒數：<input type="number" id="duration3" value="4" min="1"></label>
     </div>
     <button onclick="startTimer()">開始計時</button>
@@ -75,9 +76,8 @@
 
     function updateDisplay() {
       document.getElementById('current-stage').textContent = stages[current].label;
-      const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-      const secs = String(timeLeft % 60).padStart(2, '0');
-      document.getElementById('timer').textContent = `${mins}:${secs}`;
+      const elapsed = stages[current].duration - timeLeft;
+      document.getElementById('timer').textContent = elapsed;
     }
 
     function nextStage() {
