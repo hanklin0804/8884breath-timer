@@ -4,34 +4,45 @@
   <meta charset="UTF-8">
   <title>8884呼吸循環計時器</title>
   <style>
+    /* 頁面整體樣式 */
     body {
       background-color: #1e1e1e;
       color: white;
       font-family: sans-serif;
       text-align: center;
       padding: 20px;
-      font-size: 3em;
+      font-size: 3em; /* 整體放大（手機觀看用） */
     }
+
+    /* 輸入框樣式 */
     input {
       width: 80px;
       padding: 5px;
       margin: 5px;
       font-size: 1em;
     }
+
     label {
       margin-right: 10px;
     }
+
     .stage-input {
       margin-bottom: 10px;
     }
+
+    /* 計時數字顯示區（秒數） */
     #timer {
       font-size: 10em;
       margin: 30px 0 10px;
     }
+
+    /* 當前階段名稱（例如吸氣、吐氣） */
     #current-stage {
-      font-size: 2em;
-      margin-bottom: 10px;
+      font-size: 3em;
+      margin-bottom: 7px;
     }
+
+    /* 開始按鈕樣式 */
     button {
       padding: 10px 20px;
       font-size: 1em;
@@ -41,8 +52,8 @@
   </style>
 </head>
 <body>
-  
 
+  <!-- 設定階段的輸入區 -->
   <div id="setup">
     <div class="stage-input">
       <label>階段 1 標題：<input type="text" id="label0" value="吸氣"></label>
@@ -63,55 +74,88 @@
     <button onclick="startTimer()">開始計時</button>
   </div>
 
+  <!-- 倒數畫面區 -->
   <div id="countdown" style="display:none;">
     <div id="current-stage">準備中...</div>
     <div id="timer">00:00</div>
   </div>
 
   <script>
+    // 儲存所有階段的設定（標題與秒數）
     let stages = [];
+
+    // 目前執行到第幾個階段（0~3）
     let current = 0;
+
+    // 當前階段剩餘秒數
     let timeLeft = 0;
+
+    // 計時器 interval ID
     let intervalId = null;
 
+    // 顯示畫面內容（階段標題＋已經過的秒數）
     function updateDisplay() {
+      // 更新階段名稱
       document.getElementById('current-stage').textContent = stages[current].label;
-      const elapsed = stages[current].duration - timeLeft + 1;
+
+      // 顯示從 1 開始數到 N（正向顯示）
+      const elapsed = stages[current].duration - timeLeft;
       document.getElementById('timer').textContent = elapsed;
     }
 
+    // 進入下一個階段（循環播放）
     function nextStage() {
+      // 切換到下一個階段，超過就回到第 0 個
       current = (current + 1) % stages.length;
-      timeLeft = stages[current].duration;
+
+      // 將 timeLeft 設定為該階段的秒數 - 1（讓畫面從 1 開始數到 duration）
+      timeLeft = stages[current].duration - 1;
     }
 
+    // 每秒執行一次的計時邏輯
     function tick() {
+      // 若時間結束就跳到下一階段
       if (timeLeft < 0) {
         nextStage();
       }
+
+      // 更新畫面
       updateDisplay();
+
+      // 減少剩餘秒數
       timeLeft--;
     }
 
+    // 開始整個計時流程
     function startTimer() {
       stages = [];
+
+      // 從 4 個輸入欄位讀取標題與秒數
       for (let i = 0; i < 4; i++) {
         const label = document.getElementById(`label${i}`).value || `階段${i+1}`;
         const duration = parseInt(document.getElementById(`duration${i}`).value);
+
         if (isNaN(duration) || duration < 1) {
           alert(`請輸入有效的第 ${i+1} 階段秒數`);
           return;
         }
+
+        // 將設定加入 stages 陣列
         stages.push({ label, duration });
       }
 
+      // 隱藏設定畫面，顯示倒數區
       document.getElementById('setup').style.display = 'none';
       document.getElementById('countdown').style.display = 'block';
 
+      // 從第一階段開始
       current = 0;
-      timeLeft = stages[current].duration;
+      timeLeft = stages[current].duration - 1;
+
+      // 初始化畫面
       updateDisplay();
 
+      // 啟動計時器，每秒執行一次 tick()
       intervalId = setInterval(tick, 1000);
     }
   </script>
