@@ -76,7 +76,7 @@
 
     function updateDisplay() {
       document.getElementById('current-stage').textContent = stages[current].label;
-      const elapsed = stages[current].duration - timeLeft;
+      const elapsed = stages[current].duration - timeLeft + 1;
       document.getElementById('timer').textContent = elapsed;
     }
 
